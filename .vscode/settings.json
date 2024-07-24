@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "global.h": "c",
+        "stm32g4xx_hal_gpio.h": "c",
+        "stm32g431xx.h": "c",
+        "math.h": "c",
+        "main.h": "c",
+        "stm32g4xx_hal_adc.h": "c",
+        "stm32g4xx_hal_i2c.h": "c",
+        "bh1750.h": "c",
+        "TCS3472.h": "c",
+        "stdbool.h": "c",
+        "stm32g4xx_hal_fdcan.h": "c",
+        "stm32g4xx_hal_def.h": "c",
+        "stm32g4xx_hal.h": "c",
+        "stm32g4xx.h": "c",
+        "stm32_hal_legacy.h": "c",
+        "hal_extension.h": "c",
+        "compare": "c",
+        "limits": "c",
+        "new": "c"
+    }
+}
