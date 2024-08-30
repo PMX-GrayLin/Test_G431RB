@@ -53,3 +53,4 @@ CopyFromLib.bat
 Debug/
 Obj/
 Exe/
+.DS_Store

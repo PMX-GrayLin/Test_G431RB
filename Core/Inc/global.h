@@ -15,7 +15,7 @@
 // #define TEST_TCS3472
 // #define TEST_CAN
 // #define USE_PS2
-#define TEST_ICM42607x
+// #define TEST_ICM42607x
 
 #ifdef G431RB
 
@@ -35,6 +35,8 @@
 #include "hal_extension.h"
 #include "zlac8015d.h"
 #include "ICM42607x.h"
+
+#include "circular_buffer.h"
 
 #endif
 
