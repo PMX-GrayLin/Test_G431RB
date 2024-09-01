@@ -1,30 +1,26 @@
 #include "ex_can.h"
+#include "global.h"
 
 CANFIFOBuffer canFIFO = { 0 };
 
-// Initialize the FIFO buffer
-void CANFIFO_init() {
-  canFIFO.head = 0;
-  canFIFO.tail = 0;
-  canFIFO.count = 0;
-}
-
 // Add an element to the FIFO buffer
 bool CANFIFO_enqueue(CANTxData data) {
-  if (canFIFO.count == CAN_BUFFER_SIZE) {
-    return false;  // Buffer is full
+  if (CANFIFO_full()) {
+    xlog("%s:%d CAN FIFO Buffer Full\n\r", __func__, __LINE__);
+    return false;
   }
 
   canFIFO.data[canFIFO.tail] = data;                    // Add value to the buffer
   canFIFO.tail = (canFIFO.tail + 1) % CAN_BUFFER_SIZE;  // Increment tail index circularly
   canFIFO.count++;                                      // Increase the count of elements
+
   return true;
 }
 
 // Remove an element from the FIFO buffer
 bool CANFIFO_dequeue(CANTxData* canTxData) {
-  if (canFIFO.count == 0) {
-    // Buffer is empty
+  if (CANFIFO_empty()) {
+    xlog("%s:%d CAN FIFO Buffer Empty\n\r", __func__, __LINE__);
     return false;
   }
 
@@ -37,3 +33,8 @@ bool CANFIFO_dequeue(CANTxData* canTxData) {
 bool CANFIFO_empty() {
   return canFIFO.count == 0;
 }
+
+bool CANFIFO_full() {
+  return canFIFO.count == CAN_BUFFER_SIZE;
+}
+

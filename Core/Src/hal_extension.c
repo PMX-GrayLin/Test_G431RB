@@ -8,6 +8,9 @@
 #include "hal_extension.h"
 #include "main.h"
 #include "zlac8015d.h"
+#include "ex_can.h"
+
+#if defined(USE_CANBUS)
 
 void ConfigFDCAN(void) {
   xlog("%s:%d \n\r", __func__, __LINE__);
@@ -41,10 +44,11 @@ void ConfigFDCAN(void) {
   }
 }
 
+char fwv[8] = {0x4b, 0x31, 0x20, 0x00, 0x7f, 0x5b, 0x00, 0x00};
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs) {
   FDCAN_RxHeaderTypeDef RxHeader;
   uint8_t RxBuffer[8];
-
+  
   if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET) {
     /* Retrieve Rx messages from RX FIFO0 */
     if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &RxHeader, RxBuffer) != HAL_OK) {
@@ -54,15 +58,19 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
 
     // xlog("DataLength:0x%lx, Identifier:0x%lx, IdType:0x%lx, RxFrameType:0x%lx \n\r", RxHeader.DataLength , RxHeader.Identifier, RxHeader.IdType, RxHeader.RxFrameType);
 
-    xlog("0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x \n\r",
-         RxBuffer[0],
-         RxBuffer[1],
-         RxBuffer[2],
-         RxBuffer[3],
-         RxBuffer[4],
-         RxBuffer[5],
-         RxBuffer[6],
-         RxBuffer[7]);
+    if (memcmp(RxBuffer, fwv, 8) == 0) {
+      testCounter++;
+    }
+
+    // xlog("0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x:0x%02x \n\r",
+    //      RxBuffer[0],
+    //      RxBuffer[1],
+    //      RxBuffer[2],
+    //      RxBuffer[3],
+    //      RxBuffer[4],
+    //      RxBuffer[5],
+    //      RxBuffer[6],
+    //      RxBuffer[7]);
   }
 }
 
@@ -116,12 +124,11 @@ uint8_t CAN1_Sendx(uint32_t id, uint8_t* msg) {
   // }
 
   uint32_t freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
-  if (freeSlots == 0)
-  {
-    xlog("%s:%d, TxFifo Queue full \n\r", __func__, __LINE__);
+  if (freeSlots == 0) {
+    // xlog("%s:%d, TxFifo Queue full \n\r", __func__, __LINE__);
     HAL_Delay(1);
   }
-  
+
   /* Start the Transmission process */
   if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, msg) != HAL_OK) {
     /* Transmission request Error */
@@ -130,6 +137,66 @@ uint8_t CAN1_Sendx(uint32_t id, uint8_t* msg) {
 
   return 0;
 }
+
+uint8_t CAN1_Sendz(uint32_t id, uint8_t* msg) {
+  FDCAN_TxHeaderTypeDef TxHeader;
+  /* Prepare Tx Header */
+  TxHeader.Identifier = id;
+  TxHeader.IdType = FDCAN_STANDARD_ID;
+  TxHeader.TxFrameType = FDCAN_DATA_FRAME;
+  TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+  TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+  TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
+  TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
+  TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+  TxHeader.MessageMarker = 0;
+  
+  uint32_t freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
+  if (freeSlots == 0) {
+    // xlog("%s:%d, TxFifo Queue full \n\r", __func__, __LINE__);
+    HAL_Delay(1);
+  }
+
+  /* Start the Transmission process */
+  if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, msg) != HAL_OK) {
+    /* Transmission request Error */
+    xlog("%s:%d, HAL_FDCAN_AddMessageToTxFifoQ error \n\r", __func__, __LINE__);
+  }
+
+  return 0;
+}
+
+void CAN_doFIFO() {
+
+  while (!CANFIFO_empty()) {
+    // uint32_t freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
+    // if (freeSlots == 0) {
+    //   HAL_Delay(1);
+    //   break;
+    // }
+
+    CANTxData canTxData = {0};
+    CANFIFO_dequeue(&canTxData);
+    CAN1_Sendz(canTxData.id, canTxData.data);
+  }
+}
+
+uint8_t CAN1_SendFIFO(uint32_t id, uint8_t* msg) {
+
+  CANTxData canTxData = { 0 };
+  canTxData.id = id;
+  memcpy(canTxData.data, msg, 8);
+
+  // enqueue
+  CANFIFO_enqueue(canTxData);
+
+  // deal with fifo
+  CAN_doFIFO();
+
+  return 0;
+}
+
+#endif // USE_CAN
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 

@@ -10,10 +10,18 @@
 
 #include "global.h"
 
+// #define USE_CANBUS
+#if defined(USE_CANBUS)
+
 void ConfigFDCAN(void);
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs);
 uint8_t CAN1_Send(uint32_t id, uint8_t* msg);
 uint8_t CAN1_Sendx(uint32_t id, uint8_t* msg);
+uint8_t CAN1_SendFIFO(uint32_t id, uint8_t* msg);
+void CAN_doFIFO();
+
+#endif // USE_CAN
+
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 

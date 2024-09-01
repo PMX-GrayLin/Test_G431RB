@@ -18,7 +18,9 @@ typedef struct {
   int count;                           // Number of elements currently in the buffer
 } CANFIFOBuffer;
 
-void CANFIFO_init();
+extern CANFIFOBuffer canFIFO;
+
 bool CANFIFO_enqueue(CANTxData data);
 bool CANFIFO_dequeue(CANTxData *data);
 bool CANFIFO_empty();
+bool CANFIFO_full();

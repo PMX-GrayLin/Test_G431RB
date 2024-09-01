@@ -18,6 +18,8 @@
         "hal_extension.h": "c",
         "compare": "c",
         "limits": "c",
-        "new": "c"
+        "new": "c",
+        "stdio.h": "c",
+        "stdint.h": "c"
     }
 }

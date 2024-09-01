@@ -11,10 +11,12 @@
 // #define F302R8
 // #define MCSDK
 
+// #define USE_PS2
+#define USE_CANBUS
+
 // #define TEST_BH1750
 // #define TEST_TCS3472
-// #define TEST_CAN
-// #define USE_PS2
+#define TEST_CAN
 // #define TEST_ICM42607x
 
 #ifdef G431RB
@@ -37,6 +39,7 @@
 #include "ICM42607x.h"
 
 #include "circular_buffer.h"
+#include "ex_can.h"
 
 #endif
 
@@ -52,9 +55,9 @@
 #endif
 
 #ifndef DEBUGX
-  #define xlog
+#define xlog(...) ((void)0)
 #else
-  #define xlog printf
+#define xlog(...) printf(__VA_ARGS__)
 #endif
 
 #define toString(x) #x

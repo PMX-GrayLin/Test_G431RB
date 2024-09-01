@@ -155,7 +155,15 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 #if defined(TEST_CAN)
-    getFWVersion();
+
+    if (testBool) {
+      if (testInt < 10000) {
+        testInt++;
+        getFWVersion();
+      }
+    }
+
+    // getFWVersion();
     // HAL_Delay(1);
 #endif // TEST_CAN
 
