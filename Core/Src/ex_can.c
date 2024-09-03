@@ -38,3 +38,7 @@ bool CANFIFO_full() {
   return canFIFO.count == CAN_BUFFER_SIZE;
 }
 
+bool CANFIFO_willFull() {
+  return canFIFO.count == CAN_BUFFER_SIZE - 1;
+}
+

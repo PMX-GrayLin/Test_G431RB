@@ -24,3 +24,4 @@ bool CANFIFO_enqueue(CANTxData data);
 bool CANFIFO_dequeue(CANTxData *data);
 bool CANFIFO_empty();
 bool CANFIFO_full();
+bool CANFIFO_willFull();

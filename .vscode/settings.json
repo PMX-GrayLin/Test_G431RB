@@ -20,6 +20,7 @@
         "limits": "c",
         "new": "c",
         "stdio.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "__locale": "c"
     }
 }

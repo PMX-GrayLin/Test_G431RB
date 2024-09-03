@@ -160,6 +160,10 @@ int main(void)
       if (testInt < 10000) {
         testInt++;
         getFWVersion();
+      } else {
+        testBool = false;
+        // testInt = 0;
+        // testCounter = 0;
       }
     }
 

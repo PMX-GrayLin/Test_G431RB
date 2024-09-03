@@ -39,7 +39,7 @@ void printInfo() {
     xlog("%s:%d, Flash Image : DATE:%s, TIME:%s \n\r", __func__, __LINE__, __DATE__, __TIME__);
 
   } else if (testCase == 23) {
-    CAN_doFIFO();
+    getFWVersion();
 
   } else if (testCase == 22) {
     addData(&cb, testCounter);
