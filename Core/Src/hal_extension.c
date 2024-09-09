@@ -117,13 +117,14 @@ uint8_t CAN1_Sendx(uint32_t id, uint8_t* msg) {
   TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
   TxHeader.MessageMarker = 0;
 
-  uint32_t freeSlots = 0;
-  do {
-    freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
+  while (true) {
+    uint32_t freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
     if (freeSlots == 0) {
       HAL_Delay(1);
+    } else {
+      break;
     }
-  } while (freeSlots != 0);
+  }
 
   // uint32_t freeSlots = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
   // if (freeSlots == 0) {
